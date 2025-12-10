@@ -28,7 +28,7 @@ import Doboxa from "doboxa-js";
 
 // Initialize the client
 const doboxa = new Doboxa({
-  baseURL: "https://pl.doboxa.biz", // Optional: defaults to DOBOXA_API_URL env var or http://localhost
+  baseURL: "https://pl.doboxa.biz", // Optional: defaults to DOBOXA_API_URL env var or https://pl.doboxa.biz
 });
 ```
 
