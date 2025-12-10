@@ -1,16 +1,16 @@
-import { Configuration } from './types/generated/src/runtime';
-import { HTTPClient } from './http/client';
-import { TokenManager } from './utils/tokenManager';
-import { getBaseURL } from './utils/config';
-import { AuthenticationResource } from './resources/authentication';
-import { OrdersResource } from './resources/orders';
-import { InvoicesResource } from './resources/invoices';
-import { ClientsResource } from './resources/clients';
-import { DiscountCodesResource } from './resources/discountCodes';
-import { TrackingNumbersResource } from './resources/trackingNumbers';
-import { OrderCommentsResource } from './resources/orderComments';
-import { OrderStatusChangesResource } from './resources/orderStatusChanges';
-import { UsersResource } from './resources/users';
+import { Configuration } from "./types/generated/src/runtime";
+import { HTTPClient } from "./http/client";
+import { TokenManager } from "./utils/tokenManager";
+import { getBaseURL } from "./utils/config";
+import { AuthenticationResource } from "./resources/authentication";
+import { OrdersResource } from "./resources/orders";
+import { InvoicesResource } from "./resources/invoices";
+import { ClientsResource } from "./resources/clients";
+import { DiscountCodesResource } from "./resources/discountCodes";
+import { TrackingNumbersResource } from "./resources/trackingNumbers";
+import { OrderCommentsResource } from "./resources/orderComments";
+import { OrderStatusChangesResource } from "./resources/orderStatusChanges";
+import { UsersResource } from "./resources/users";
 
 export interface DoboxaConfig {
   /**
@@ -42,11 +42,11 @@ export class Doboxa {
   private config: Configuration;
 
   constructor(config: DoboxaConfig = {}) {
-    const baseURL = config.baseURL || getBaseURL() || 'http://localhost';
-    
+    const baseURL = config.baseURL || getBaseURL() || "https://pl.doboxa.biz";
+
     this.tokenManager = new TokenManager();
     if (config.apiKey) {
-      this.tokenManager.setTokens(config.apiKey, '', 3600);
+      this.tokenManager.setTokens(config.apiKey, "", 3600);
     }
 
     // Create configuration for generated APIs
@@ -54,10 +54,10 @@ export class Doboxa {
     this.config = new Configuration({
       basePath: baseURL,
       apiKey: async (name: string) => {
-        if (name === 'Authorization') {
+        if (name === "Authorization") {
           const token = this.tokenManager.getAccessToken();
           if (!token) {
-            throw new Error('No access token available');
+            throw new Error("No access token available");
           }
           return `Bearer ${token}`;
         }
@@ -77,23 +77,44 @@ export class Doboxa {
       tokenManager: this.tokenManager,
       onTokenRefresh: async (refreshToken: string) => {
         // Use temporary HTTP client to refresh token (avoids circular dependency)
-        const tempAuth = new AuthenticationResource(tempHttpClient, this.tokenManager);
+        const tempAuth = new AuthenticationResource(
+          tempHttpClient,
+          this.tokenManager
+        );
         const response = await tempAuth.refreshToken(refreshToken);
-        this.tokenManager.setTokens(response.token!, response.refresh_token!, 3600);
+        this.tokenManager.setTokens(
+          response.token!,
+          response.refresh_token!,
+          3600
+        );
         return response.token!;
       },
     });
 
     // Initialize resources
-    this.authentication = new AuthenticationResource(this.httpClient, this.tokenManager);
+    this.authentication = new AuthenticationResource(
+      this.httpClient,
+      this.tokenManager
+    );
     this.orders = new OrdersResource(this.httpClient, this.config);
     this.invoices = new InvoicesResource(this.httpClient, this.config);
     this.clients = new ClientsResource(this.httpClient, this.config);
-    this.discountCodes = new DiscountCodesResource(this.httpClient, this.config);
-    this.trackingNumbers = new TrackingNumbersResource(this.httpClient, this.config);
-    this.orderComments = new OrderCommentsResource(this.httpClient, this.config);
-    this.orderStatusChanges = new OrderStatusChangesResource(this.httpClient, this.config);
+    this.discountCodes = new DiscountCodesResource(
+      this.httpClient,
+      this.config
+    );
+    this.trackingNumbers = new TrackingNumbersResource(
+      this.httpClient,
+      this.config
+    );
+    this.orderComments = new OrderCommentsResource(
+      this.httpClient,
+      this.config
+    );
+    this.orderStatusChanges = new OrderStatusChangesResource(
+      this.httpClient,
+      this.config
+    );
     this.users = new UsersResource(this.httpClient, this.config);
   }
 }
-
