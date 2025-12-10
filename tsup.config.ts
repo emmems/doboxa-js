@@ -11,7 +11,7 @@ export default defineConfig(overrideOptions => {
       index: 'src/index.ts',
     },
     dts: true,
-    onSuccess: shouldPublish ? 'pnpm publish' : undefined,
+    onSuccess: shouldPublish ? `git tag v${version} && pnpm publish` : undefined,
     format: ['cjs', 'esm'],
     bundle: true,
     clean: true,
