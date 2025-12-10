@@ -9,6 +9,9 @@ export default defineConfig(overrideOptions => {
   return {
     entry: {
       index: 'src/index.ts',
+      errors: 'src/errors.ts',
+      client: 'src/client.ts',
+      models: 'src/models.ts',
     },
     dts: true,
     onSuccess: shouldPublish ? `git tag v${version} && pnpm publish` : undefined,
