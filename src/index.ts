@@ -9,6 +9,7 @@ export {
   DoboxaAPIError,
   DoboxaAuthenticationError,
   DoboxaValidationError,
+  DoboxaConnectorError,
   parseErrorResponse,
 } from './errors';
 
@@ -25,6 +26,7 @@ export { TrackingNumbersResource } from './resources/trackingNumbers';
 export { OrderCommentsResource } from './resources/orderComments';
 export { OrderStatusChangesResource } from './resources/orderStatusChanges';
 export { UsersResource } from './resources/users';
+export { CatalogResource } from './resources/catalog';
 
 // Default export
 export default Doboxa;

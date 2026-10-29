@@ -11,6 +11,8 @@ import { TrackingNumbersResource } from "./resources/trackingNumbers";
 import { OrderCommentsResource } from "./resources/orderComments";
 import { OrderStatusChangesResource } from "./resources/orderStatusChanges";
 import { UsersResource } from "./resources/users";
+import { CatalogResource } from "./resources/catalog";
+import type { BaseLinkerConnectorConfig } from "./types/catalog";
 
 export interface DoboxaConfig {
   /**
@@ -21,6 +23,13 @@ export interface DoboxaConfig {
    * Base URL for the API. Defaults to DOBOXA_API_URL environment variable or http://localhost
    */
   baseURL?: string;
+  /**
+   * Product catalog credentials (Doboxa's BaseLinker connector).
+   * The connector URL and the "Hasło" are shown in the Doboxa panel:
+   * Integracje -> Edycja. When set, `doboxa.catalog` is available.
+   * The catalog does not use the API key, only the connector password.
+   */
+  catalog?: BaseLinkerConnectorConfig;
 }
 
 /**
@@ -36,6 +45,10 @@ export class Doboxa {
   public readonly orderComments: OrderCommentsResource;
   public readonly orderStatusChanges: OrderStatusChangesResource;
   public readonly users: UsersResource;
+  /**
+   * Product catalog (BaseLinker connector). Available only when `catalog` config is provided.
+   */
+  public readonly catalog?: CatalogResource;
 
   private tokenManager: TokenManager;
   private httpClient: HTTPClient;
@@ -116,5 +129,11 @@ export class Doboxa {
       this.config
     );
     this.users = new UsersResource(this.httpClient, this.config);
+
+    // Initialize the product catalog resource (BaseLinker connector).
+    // It is a separate API and does not use the API key, only the connector password.
+    if (config.catalog) {
+      this.catalog = new CatalogResource(config.catalog);
+    }
   }
 }

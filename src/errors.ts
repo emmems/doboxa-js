@@ -60,6 +60,29 @@ export class DoboxaAuthenticationError extends DoboxaError {
 }
 
 /**
+ * Error thrown when the BaseLinker connector returns an error.
+ * The connector always answers with HTTP 200, so the error is carried in the body.
+ */
+export class DoboxaConnectorError extends DoboxaError {
+  /**
+   * Machine readable error code, e.g. "bad_password", "no_password", "unsupported_method"
+   */
+  public readonly errorCode: string;
+  /**
+   * Human readable error text returned by the connector
+   */
+  public readonly errorText: string;
+
+  constructor(errorCode: string, errorText: string, message?: string) {
+    super(message || errorText || `BaseLinker connector error: ${errorCode}`);
+    this.name = 'DoboxaConnectorError';
+    this.errorCode = errorCode;
+    this.errorText = errorText;
+    Object.setPrototypeOf(this, DoboxaConnectorError.prototype);
+  }
+}
+
+/**
  * Error thrown when request validation fails
  */
 export class DoboxaValidationError extends DoboxaAPIError {

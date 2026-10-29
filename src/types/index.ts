@@ -1,6 +1,9 @@
 // Re-export all generated types
 export * from '../types/generated/src/models';
 
+// Re-export product catalog (BaseLinker connector) types
+export * from './catalog';
+
 // Re-export convenience types from resources
 export type {
   LoginParams,

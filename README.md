@@ -269,6 +269,54 @@ const me = await doboxa.users.me();
 console.log("Current user:", me.username);
 ```
 
+### Product catalog (BaseLinker connector)
+
+The product catalog is not part of API v2 - it is served by Doboxa's BaseLinker
+connector (shop integration file) on its own URL. The merchant finds both
+credentials in the Doboxa client panel: **Integracje → Edycja** on the BaseLinker
+integration. The modal shows the connector URL and the **Hasło** (password)
+field.
+
+```typescript
+const doboxa = new Doboxa({
+  baseURL: "https://pl.doboxa.biz",
+  catalog: {
+    url: "https://pl.doboxa.biz/api/base-linker/{clientToken}/{language}",
+    password: "YOUR_BL_PASS",
+  },
+});
+const catalog = doboxa.catalog!; // defined because `catalog` config was passed
+
+// Connector capabilities
+console.log(await catalog.fileVersion());
+console.log(await catalog.supportedMethods());
+
+// Categories: { "<id>": "Category / Path" }
+const categories = await catalog.categories();
+
+// One page of designs (100 per page)
+const { pages, items } = await catalog.list({ page: 1 });
+console.log(pages, items[0].id, items[0].name, items[0].price);
+
+// Full data (images, variants) for selected designs
+const data = await catalog.data({
+  products_id: [items[0].id],
+});
+```
+
+Notes:
+
+- The catalog uses only the connector password, so no `apiKey` is needed - the
+  client works with the catalog, with the API and with both.
+- `list()` returns one entry per design (the first variant); `data()` returns
+  the design with all of its variants.
+- Prices are strings in PLN (up to 3 decimals) and are most likely **net**
+  prices - the markup is set by the merchant in the panel ("Zarządzanie cenami").
+- The connector has no order methods, so orders are still created through
+  API v2 (`doboxa.orders`).
+- Connector errors are returned with HTTP 200 and are thrown as
+  `DoboxaConnectorError` (with `errorCode` and `errorText`).
+
 ## Environment Variables
 
 You can set the API base URL using an environment variable:
@@ -368,6 +416,13 @@ import type {
 
 - **Users**: `doboxa.users`
   - `me()` - Get current user
+
+- **Catalog**: `doboxa.catalog` (only when the `catalog` config is provided)
+  - `fileVersion()` - Get the connector platform and version
+  - `supportedMethods()` - Get the list of supported actions
+  - `categories()` - Get all product categories
+  - `list(params?)` - List one page of products (designs)
+  - `data(params)` - Get full product data (images, variants) for design ids
 
 ## License
 

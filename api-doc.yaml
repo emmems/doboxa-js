@@ -1264,7 +1264,7 @@ components:
       properties:
         cancelled:
           description: Cancellation result
-          type: bool
+          type: boolean
           example: true
           nullable: false
         details:
